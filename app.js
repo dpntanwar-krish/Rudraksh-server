@@ -22,6 +22,10 @@ app.listen(2004, function () {
   console.log("Server Started...2004")
 })
 
+
+app.get('/', (req, res) => {
+  res.send("Welcome to Rudraksh Server");
+});
 if (!isCloudinaryConfigured) {
   console.log("Cloudinary env missing: set CLOUD_NAME, API_KEY, API_SECRET in server .env");
 }
