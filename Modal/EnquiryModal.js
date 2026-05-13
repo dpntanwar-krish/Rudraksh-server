@@ -4,8 +4,10 @@ var EnquirySchema = mongoose.Schema;
 
 var EnquiryColSchema = {
   fullname: String,
-  email: { type: String, required: true, index: true, unique: true },
-  phone: Number,
+  // keep email indexed, but do not force unique: same user may submit multiple enquiries
+  email: { type: String, required: true, index: true },
+  // keep phone as string to preserve leading zeros and avoid cast errors
+  phone: String,
   subject: String,
   message: String,
 };
