@@ -31,4 +31,18 @@ async function Dofetchall(req, resp) {
         resp.json({ status: false, msg: err.message || "Failed to fetch enquiries" });
     }
 }
-module.exports = { Dosave, Dofetchall };
+async function Dodelete(req, resp) {
+    try {
+        const id = req.params.id;
+        const deleted = await EnquiryColRef.findByIdAndDelete(id);
+
+        if (!deleted) {
+            return resp.json({ status: false, msg: "Enquiry not found" });
+        }
+
+        return resp.json({ status: true, msg: "Enquiry deleted successfully" });
+    } catch (err) {
+        return resp.json({ status: false, msg: err.message || "Failed to delete enquiry" });
+    }
+}
+module.exports = { Dosave, Dofetchall, Dodelete };
