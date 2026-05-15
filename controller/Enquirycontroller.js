@@ -23,4 +23,12 @@ async function Dosave(req, resp) {
 
         });
 }
-module.exports = { Dosave };
+async function Dofetchall(req, resp) {
+    try {
+        const rows = await EnquiryColRef.find({}).sort({ _id: -1 });
+        resp.json({ status: true, data: rows });
+    } catch (err) {
+        resp.json({ status: false, msg: err.message || "Failed to fetch enquiries" });
+    }
+}
+module.exports = { Dosave, Dofetchall };
