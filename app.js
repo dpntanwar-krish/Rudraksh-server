@@ -7,6 +7,7 @@ const EnquiryRouter = require("./routas/Enquiryrouter");
 const fileRouter = require("./routas/Filerouter");
 const sliderRouter = require("./routas/Sliderrouter");
 const adminAuthRouter = require("./routas/AdminAuthrouter");
+const newsRouter = require("./routas/Newsrouter");
 const { isCloudinaryConfigured } = require("./config/cloudinary");
 
 dotenv.config();
@@ -29,6 +30,8 @@ app.use("/File", fileRouter);
 app.use("/file", fileRouter);
 app.use("/Slider", sliderRouter);
 app.use("/slider", sliderRouter);
+app.use("/News", newsRouter);
+app.use("/news", newsRouter);
 app.use("/admin", adminAuthRouter);
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
