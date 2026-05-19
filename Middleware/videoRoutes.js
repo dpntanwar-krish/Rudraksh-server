@@ -4,8 +4,8 @@ const {
   uploadVideo,
   getAllVideos,
   deleteVideo,
-} = require("../controllers/videoController");
-const upload = require("../middleware/multer");
+} = require("./videoController");
+const upload = require("./multer");
 
 // POST /api/Video/upload
 router.post("/upload", upload.array("videos"), uploadVideo);

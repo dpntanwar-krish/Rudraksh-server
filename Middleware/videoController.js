@@ -1,4 +1,4 @@
-const Video = require("../models/Video");
+const Video = require("../Modal/VideoModal");
 const cloudinary = require("cloudinary").v2;
 
 // Configure Cloudinary - make sure to set these in your .env file
@@ -11,6 +11,7 @@ cloudinary.config({
 // Upload videos
 const uploadVideo = async (req, res) => {
   try {
+    console.log("Received files:", req.files);
     const { title } = req.body;
     const files = req.files;
 
