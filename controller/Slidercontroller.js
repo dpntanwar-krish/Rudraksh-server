@@ -109,17 +109,26 @@ const updateSliderSequence = async (req, res) => {
 const toggleSliderStatus = async (req, res) => {
   try {
     const id = req.params.id;
-    const slider = await SliderRef.findById(id);
-    if (!slider) {
+    const existing = await SliderRef.findById(id).select("_id isActive");
+    if (!existing) {
       return res.status(404).json({ status: false, msg: "Slider not found" });
     }
 
-    slider.isActive = !slider.isActive;
-    await slider.save();
+    const nextIsActive = existing.isActive === false;
+    const updated = await SliderRef.findByIdAndUpdate(
+      id,
+      { $set: { isActive: nextIsActive } },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ status: false, msg: "Slider not found" });
+    }
+
     return res.status(200).json({
       status: true,
-      msg: slider.isActive ? "Slider activated" : "Slider deactivated",
-      data: slider,
+      msg: updated.isActive ? "Slider activated" : "Slider deactivated",
+      data: updated,
     });
   } catch (err) {
     return res.status(500).json({ status: false, msg: err.message });
