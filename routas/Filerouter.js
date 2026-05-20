@@ -4,7 +4,7 @@ const router = express.Router();
 
 const upload = require("../Middleware/upload");
 
-const { Upload, getFiles, DelImg } = require("../controller/Filecontroller");
+const { Upload, getFiles, DelImg, getFolders, createFolder, deleteFolder } = require("../controller/Filecontroller");
 
 /* Upload */
 
@@ -25,6 +25,9 @@ router.post("/upload", (req, res, next) => {
 /* Get */
 
 router.get("/files",getFiles );
+router.get("/folders", getFolders);
+router.post("/create-folder", createFolder);
+router.delete("/delete-folder/:folder", deleteFolder);
 
 /* Delete */
 

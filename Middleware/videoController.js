@@ -1,12 +1,5 @@
 const Video = require("../Modal/VideoModal");
-const cloudinary = require("cloudinary").v2;
-
-// Configure Cloudinary - make sure to set these in your .env file
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+const { cloudinary } = require("../config/cloudinary");
 
 // Upload videos
 const uploadVideo = async (req, res) => {
@@ -40,7 +33,7 @@ const uploadVideo = async (req, res) => {
     res.status(201).json({ status: true, msg: "Videos uploaded successfully", data: newVideos });
   } catch (error) {
     console.error("Video upload error:", error);
-    if (error.message && error.message.includes('File size too large')) {
+    if (error.code === "LIMIT_FILE_SIZE" || (error.message && error.message.includes("File size too large"))) {
         return res.status(400).json({ msg: "One or more videos are larger than 8MB." });
     }
     res.status(500).json({ msg: "Server error during video upload." });

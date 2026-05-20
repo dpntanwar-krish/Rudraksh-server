@@ -1,8 +1,5 @@
 const multer = require("multer");
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({});
-
 const fileFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("video")) {
     cb(null, true);
@@ -12,7 +9,7 @@ const fileFilter = (req, file, cb) => {
 };
 
 const upload = multer({
-  storage,
+  dest: "uploads/",
   fileFilter,
   limits: { fileSize: 8 * 1024 * 1024 }, // 8MB limit
 });

@@ -5,6 +5,7 @@ var fileSchema = new mongoose.Schema;
 var fileColSchema = {
 
     title: String,
+    folder: { type: String, default: "gallery" },
     imageUrl: String,
     public_id: String,
 

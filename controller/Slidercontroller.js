@@ -16,6 +16,8 @@ const uploadSlider = async (req, res) => {
     }
 
     const docs = [];
+    const lastSlider = await SliderRef.findOne({}).sort({ sequence: -1, createdAt: -1 });
+    let nextSequence = lastSlider?.sequence >= 0 ? lastSlider.sequence + 1 : 0;
 
     for (const file of files) {
       const uploaded = await cloudinary.uploader.upload(file.path, {
@@ -24,8 +26,11 @@ const uploadSlider = async (req, res) => {
 
       docs.push({
         title,
+        image: uploaded.secure_url,
         imageUrl: uploaded.secure_url,
         public_id: uploaded.public_id,
+        sequence: nextSequence++,
+        isActive: true,
       });
 
       try {
@@ -44,7 +49,7 @@ const uploadSlider = async (req, res) => {
 
 const getSliders = async (req, res) => {
   try {
-    const rows = await SliderRef.find({}).sort({ createdAt: -1 });
+    const rows = await SliderRef.find({}).sort({ sequence: 1, createdAt: -1 });
     return res.status(200).json({ status: true, data: rows });
   } catch (err) {
     return res.status(500).json({ status: false, msg: err.message });
@@ -74,4 +79,51 @@ const deleteSlider = async (req, res) => {
   }
 };
 
-module.exports = { uploadSlider, getSliders, deleteSlider };
+const updateSliderSequence = async (req, res) => {
+  try {
+    const orderedIds = Array.isArray(req.body?.orderedIds) ? req.body.orderedIds : [];
+    if (!orderedIds.length) {
+      return res.status(400).json({ status: false, msg: "orderedIds is required" });
+    }
+
+    const uniqueIds = [...new Set(orderedIds.map(String))];
+    const totalRows = await SliderRef.countDocuments({});
+    if (uniqueIds.length !== totalRows) {
+      return res.status(400).json({ status: false, msg: "orderedIds must include every slider exactly once" });
+    }
+
+    const bulkOps = uniqueIds.map((id, index) => ({
+      updateOne: {
+        filter: { _id: id },
+        update: { $set: { sequence: index } },
+      },
+    }));
+
+    await SliderRef.bulkWrite(bulkOps);
+    return res.status(200).json({ status: true, msg: "Slider sequence updated" });
+  } catch (err) {
+    return res.status(500).json({ status: false, msg: err.message });
+  }
+};
+
+const toggleSliderStatus = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const slider = await SliderRef.findById(id);
+    if (!slider) {
+      return res.status(404).json({ status: false, msg: "Slider not found" });
+    }
+
+    slider.isActive = !slider.isActive;
+    await slider.save();
+    return res.status(200).json({
+      status: true,
+      msg: slider.isActive ? "Slider activated" : "Slider deactivated",
+      data: slider,
+    });
+  } catch (err) {
+    return res.status(500).json({ status: false, msg: err.message });
+  }
+};
+
+module.exports = { uploadSlider, getSliders, deleteSlider, updateSliderSequence, toggleSliderStatus };
