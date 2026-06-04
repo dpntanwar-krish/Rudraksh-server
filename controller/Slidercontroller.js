@@ -127,7 +127,7 @@ const toggleSliderStatus = async (req, res) => {
 
     return res.status(200).json({
       status: true,
-      msg: updated.isActive ? "Slider activated" : "Slider deactivated",
+      msg: updated.isActive ? "Slider turned On" : "Slider turned Off",
       data: updated,
     });
   } catch (err) {

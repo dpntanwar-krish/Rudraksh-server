@@ -1,10 +1,10 @@
 const multer = require("multer");
 
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith("video")) {
+  if (file.mimetype.startsWith("video") || file.mimetype.startsWith("image")) {
     cb(null, true);
   } else {
-    cb(new Error("Not a video! Please upload only videos."), false);
+    cb(new Error("Unsupported file type! Please upload only videos or images."), false);
   }
 };
 
