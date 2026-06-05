@@ -6,6 +6,8 @@ var fileColSchema = {
 
     title: String,
     folder: { type: String, default: "gallery" },
+    parentId: { type: String, default: null },
+    sequence: { type: Number, default: 0 },
     imageUrl: String,
     public_id: String,
 

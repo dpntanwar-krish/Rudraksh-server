@@ -81,7 +81,7 @@ const deleteSlider = async (req, res) => {
 
 const updateSliderSequence = async (req, res) => {
   try {
-    const orderedIds = Array.isArray(req.body?.orderedIds) ? req.body.orderedIds : [];
+      const orderedIds = Array.isArray(req.body?.orderedIds) ? req.body.orderedIds : [];
     if (!orderedIds.length) {
       return res.status(400).json({ status: false, msg: "orderedIds is required" });
     }

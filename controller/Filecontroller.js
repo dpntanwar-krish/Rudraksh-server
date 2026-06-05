@@ -111,21 +111,53 @@ const DelImg = async (req, res) => {
 
 const getFolders = async (req, res) => {
     try {
+        const { parentId } = req.query;
+        // Fetch folder placeholders for specific level sorted by sequence
+        const query = { title: "__folder__", parentId: parentId || null };
+        const placeholders = await FileRef.find(query).sort({ sequence: 1 });
+        
+        // Aggregate counts for all files in folders
         const grouped = await FileRef.aggregate([
             {
                 $group: {
                     _id: "$folder",
-                    count: { $sum: 1 },
+                    count: { $sum: { $cond: [{ $eq: ["$title", "__folder__"] }, 0, 1] } },
                 },
             },
-            { $sort: { _id: 1 } },
         ]);
 
-        const folders = grouped
-            .filter((row) => row._id)
-            .map((row) => ({ name: row._id, count: row.count }));
+        const countMap = grouped.reduce((acc, curr) => {
+            acc[curr._id] = curr.count;
+            return acc;
+        }, {});
+
+        const folders = placeholders.map(p => ({
+            name: p.folder,
+            count: countMap[p.folder] || 0
+        }));
 
         return res.status(200).json({ status: true, data: folders });
+    } catch (error) {
+        return res.status(500).json({ status: false, msg: error.message });
+    }
+};
+
+const updateFolderSequence = async (req, res) => {
+    try {
+        const { folderNames } = req.body;
+        if (!Array.isArray(folderNames)) {
+            return res.status(400).json({ status: false, msg: "folderNames is required" });
+        }
+
+        const bulkOps = folderNames.map((name, index) => ({
+            updateOne: {
+                filter: { title: "__folder__", folder: name },
+                update: { $set: { sequence: index } },
+            },
+        }));
+
+        await FileRef.bulkWrite(bulkOps);
+        return res.status(200).json({ status: true, msg: "Sequence updated" });
     } catch (error) {
         return res.status(500).json({ status: false, msg: error.message });
     }
@@ -134,20 +166,26 @@ const getFolders = async (req, res) => {
 const createFolder = async (req, res) => {
     try {
         const folder = (req.body?.folder || "").trim();
+        const parentId = req.body?.parentId || null;
         if (!folder) {
             return res.status(400).json({ status: false, msg: "Folder name is required." });
         }
 
-        const exists = await FileRef.exists({ folder });
+        const exists = await FileRef.exists({ folder, parentId });
         if (exists) {
             return res.status(200).json({ status: true, msg: "Folder already exists.", folder });
         }
+
+        const lastFolder = await FileRef.findOne({ title: "__folder__" }).sort({ sequence: -1 });
+        const nextSeq = lastFolder ? (lastFolder.sequence || 0) + 1 : 0;
 
         await FileRef.create({
             title: "__folder__",
             folder,
             imageUrl: "",
             public_id: "",
+            parentId,
+            sequence: nextSeq,
         });
 
         return res.status(201).json({ status: true, msg: "Folder created.", folder });
@@ -185,4 +223,4 @@ const deleteFolder = async (req, res) => {
     }
 };
 
-module.exports = { Upload, getFiles, DelImg, getFolders, createFolder, deleteFolder };
+module.exports = { Upload, getFiles, DelImg, getFolders, createFolder, deleteFolder, updateFolderSequence };
