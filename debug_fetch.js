@@ -1,12 +1,12 @@
 const urls = [
-  'http://localhost:2004/',
-  'http://localhost:2004/Enquiry/Eall',
-  'http://localhost:2004/Slider/all',
-  'http://localhost:2004/File/files',
-  'http://localhost:2004/Video/videos',
-  'http://localhost:2004/News/all',
-  'http://localhost:2004/Portfolio?counts=true',
-  'http://localhost:2004/api/portfolio?counts=true'
+  server_url + '/',
+  server_url + '/Enquiry/Eall',
+  server_url + '/Slider/all',
+  server_url + '/File/files',
+  server_url + '/Video/videos',
+  server_url + '/News/all',
+  server_url + '/Portfolio?counts=true',
+  server_url + '/api/portfolio?counts=true'
 ];
 
 (async () => {

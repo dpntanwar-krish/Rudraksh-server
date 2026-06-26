@@ -1,6 +1,6 @@
 const urls = [
-  'http://localhost:2004/Portfolio/count',
-  'http://localhost:2004/api/portfolio/count'
+  server_url + '/Portfolio/count',
+  server_url + '/api/portfolio/count'
 ];
 
 (async () => {
