@@ -118,7 +118,7 @@ const toggleSliderStatus = async (req, res) => {
     const updated = await SliderRef.findByIdAndUpdate(
       id,
       { $set: { isActive: nextIsActive } },
-      { new: true }
+      { returnDocument: "after" }
     );
 
     if (!updated) {

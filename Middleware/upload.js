@@ -23,8 +23,8 @@ const upload = multer({
         files: 10,
     },
     fileFilter: function (req, file, cb) {
-        if (!file.mimetype || !file.mimetype.startsWith("image/")) {
-            return cb(new Error("Only image files are allowed."));
+        if (!file.mimetype || (!file.mimetype.startsWith("image/") && file.mimetype !== "application/pdf")) {
+            return cb(new Error("Only image and PDF files are allowed."));
         }
         cb(null, true);
     },

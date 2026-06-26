@@ -10,6 +10,9 @@ var fileColSchema = {
     sequence: { type: Number, default: 0 },
     imageUrl: String,
     public_id: String,
+    resourceType: { type: String, default: "image" },
+    mimeType: { type: String, default: "" },
+    originalName: { type: String, default: "" },
 
 };
 

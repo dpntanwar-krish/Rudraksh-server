@@ -1,7 +1,14 @@
 const express = require("express");
 const upload = require("../Middleware/upload");
-const { saveNews, fetchAllNews, deleteNews, updateNews, updateNewsSequence } = require("../controller/Newscontroller");
 const { requireAdminAuth } = require("../Middleware/adminAuthMiddleware");
+const {
+  saveTeamMember,
+  fetchAllTeamMembers,
+  fetchActiveTeamMembers,
+  deleteTeamMember,
+  updateTeamMember,
+  updateTeamSequence,
+} = require("../controller/Teamcontroller");
 
 const router = express.Router();
 
@@ -12,10 +19,12 @@ router.post("/save", requireAdminAuth, (req, res, next) => {
     }
     next();
   });
-}, saveNews);
+}, saveTeamMember);
 
-router.get("/all", fetchAllNews);
-router.delete("/delete/:id", requireAdminAuth, deleteNews);
+router.get("/all", fetchAllTeamMembers);
+router.get("/active", fetchActiveTeamMembers);
+router.delete("/delete/:id", requireAdminAuth, deleteTeamMember);
+
 router.put("/update/:id", requireAdminAuth, (req, res, next) => {
   upload.single("image")(req, res, (err) => {
     if (err) {
@@ -23,8 +32,8 @@ router.put("/update/:id", requireAdminAuth, (req, res, next) => {
     }
     next();
   });
-}, updateNews);
+}, updateTeamMember);
 
-router.put("/sequence", requireAdminAuth, updateNewsSequence);
+router.put("/sequence", requireAdminAuth, updateTeamSequence);
 
 module.exports = router;
